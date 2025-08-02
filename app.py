@@ -10,7 +10,7 @@ app = Flask(__name__)
 app.permanent_session_lifetime = timedelta(hours=1)  # Session expires after 1 hour
 pp.secret_key = ''  # <== 🔥 Place this here
 # MongoDB Connection
-# Enter your mango db Connection String
+# Enter your own mango db Connection String
 client = MongoClient("mongodb+srv://user:password@taskcluster.zlltsdv.mongodb.net/?retryWrites=true&w=majority&appName=TaskCluster")
 
 db = client['task_manager']
@@ -26,55 +26,54 @@ def index():
         return redirect(url_for('login'))
 
     user_id = session['user_id']
-
-    # Only get status filter from URL, not session
     status_filter = request.args.get('status')
     search_query = request.args.get('search')
     sort_by_deadline = request.args.get('sort') == 'deadline'
 
-    # Get counts for ALL tasks
+    # Get counts for ALL tasks (always calculate these)
     total_count = tasks_collection.count_documents({'user_id': user_id})
     Pending_count = tasks_collection.count_documents({'user_id': user_id, 'status': 'Pending'})
     In_Progress_count = tasks_collection.count_documents({'user_id': user_id, 'status': 'In Progress'})
     Completed_count = tasks_collection.count_documents({'user_id': user_id, 'status': 'Completed'})
 
     tasks = []
-    show_components = bool(status_filter)  # Only show if filter is explicitly selected
+    # Show components if either a filter or search is selected
+    show_components = status_filter is not None or search_query is not None
 
-    if status_filter:
-        query = {"user_id": user_id}
-        if status_filter != 'all':
-            query['status'] = status_filter
-        if search_query:
-            query['title'] = {'$regex': search_query, '$options': 'i'}
+    query = {"user_id": user_id}
 
-        if sort_by_deadline:
-            tasks_cursor = tasks_collection.find(query).sort('deadline', 1)
-        else:
-            tasks_cursor = tasks_collection.find(query)
+    if status_filter and status_filter != 'all':
+        query['status'] = status_filter
 
-        for task in tasks_cursor:
-            task['id'] = str(task['_id'])
-            del task['_id']
-            tasks.append(task)
+    if search_query:
+        query['title'] = {'$regex': search_query, '$options': 'i'}  # Case-insensitive regex search
 
-    # Calculate overall completion percentage
+    if sort_by_deadline:
+        tasks_cursor = tasks_collection.find(query).sort('deadline', 1)
+    else:
+        tasks_cursor = tasks_collection.find(query)
+
+    for task in tasks_cursor:
+        task['id'] = str(task['_id'])
+        del task['_id']
+        tasks.append(task)
+
+    # Calculate overall completion percentage (always calculate)
     overall_completed_percentage = 0
     if total_count > 0:
         overall_completed_percentage = round((Completed_count / total_count) * 100)
 
     return render_template('index.html',
                            tasks=tasks,
-                           selected_status=status_filter,  # Will be None on first load
+                           selected_status=status_filter,
                            total_count=total_count,
                            Pending_count=Pending_count,
                            In_Progress_count=In_Progress_count,
                            Completed_count=Completed_count,
                            overall_completed_percentage=overall_completed_percentage,
                            username=session.get('username'),
-                           show_table=show_components,
-                           show_progress=show_components)
-
+                           show_components=show_components,
+                           search_query=search_query)  # Pass search_query to template
 # Helper function to convert MongoDB documents to JSON-safe format
 def serialize_task(task):
     return {
@@ -123,8 +122,7 @@ def delete_task(task_id):
         return "Unauthorized or task not found", 403
     if 'last_filter' in session:
         return redirect(url_for('index', status=session['last_filter']))
-    return redirect(url_for('index'))
-
+    return redirect(url_for('index'))  # No filter
 
 @app.route("/update", methods=["POST"])
 def update_task():
@@ -156,8 +154,7 @@ def update_task():
 
     if 'last_filter' in session:
         return redirect(url_for('index', status=session['last_filter']))
-    return redirect(url_for('index'))
-
+    return redirect(url_for('index'))  # No filter
 @app.route('/filter_tasks')
 def filter_tasks():
     if 'user_id' not in session:
@@ -224,7 +221,7 @@ def add_task():
     flash('Task added successfully!', 'success')
     if 'last_filter' in session:
         return redirect(url_for('index', status=session['last_filter']))
-    return redirect(url_for('index'))
+    return redirect(url_for('index'))  # No filter
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -289,4 +286,3 @@ def logout():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
