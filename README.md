@@ -26,7 +26,8 @@ A responsive task management system with user authentication, CRUD operations, a
 - UI: Font Awesome, SweetAlert2
 
 ## Setup
-1. Clone this repository
+1. Clone this repository 
+     git clone  https://github.com/abdullah25-23/Task-Management-System.git
 2. Install requirements: `pip install flask pymongo`
 3. Paste your's Coonection String and Passwords
 4. Run: `python app.py`
