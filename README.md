@@ -28,8 +28,9 @@ A responsive task management system with user authentication, CRUD operations, a
 ## Setup
 1. Clone this repository
 2. Install requirements: `pip install flask pymongo`
-3. Paste yours Coonection String and Passwords
+3. Paste your's Coonection String and Passwords
 4. Run: `python app.py`
 5. Access at `http://localhost:5000`
 
-[▶ Video Demo](#) <!-- Add your video link later -->
+## Demo Video (2:31)
+[▶ Watch on Google Drive](https://drive.google.com/file/d/1-J5McCMIDl2Ui9NNfgXPgLxguuzMdKmy/view?usp=drivesdk)
