@@ -705,25 +705,27 @@ input[title]:hover:after {
         <i class="fas fa-check-circle"></i> Completed{% if selected_status == 'Completed' %} ({{ Completed_count }}){% endif %}
     </a>
 </div>
-        <!-- Search and Sort Row -->
-    <div class="search-filter-row">
-        <div class="search-box">
-            <form method="get" class="d-flex gap-2">
-                <input class="form-control" type="search" placeholder="Search by title" name="search" value="{{ request.args.get('search', '') }}">
-                <button class="btn btn-outline-primary" type="submit">
-                    <i class="fas fa-search"></i> Search
-                </button>
-            </form>
-        </div>
-        <div class="filter-buttons">
-            <a href="{{ url_for('index', search=request.args.get('search', ''), status=request.args.get('status', ''), sort='deadline') }}"
-               class="btn btn-outline-secondary">
-                <i class="fas fa-sort-amount-down"></i> Sort by Deadline
-            </a>
-        </div>
+   <!-- Search and Sort Row -->
+<div class="search-filter-row">
+    <div class="search-box">
+        <form method="get" class="d-flex gap-2">
+            <input type="hidden" name="status" value="{{ selected_status }}">
+            <input class="form-control" type="search" placeholder="Search by title" name="search" value="{{ search_query or '' }}">
+            <button class="btn btn-outline-primary" type="submit">
+                <i class="fas fa-search"></i> Search
+            </button>
+        </form>
     </div>
-<!-- Progress Bar - Only shown when a filter is selected -->
-{% if show_progress %}
+    <div class="filter-buttons">
+        <a href="{{ url_for('index', search=request.args.get('search', ''), status=request.args.get('status', ''), sort='deadline') }}"
+           class="btn btn-outline-secondary">
+            <i class="fas fa-sort-amount-down"></i> Sort by Deadline
+        </a>
+    </div>
+</div>
+<!-- Only show these sections when a filter is selected -->
+{% if show_components %}
+<!-- Progress Bar -->
 <div class="progress-section">
     <div class="progress">
         <div id="taskProgressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-success"
@@ -733,9 +735,8 @@ input[title]:hover:after {
         </div>
     </div>
 </div>
-{% endif %}
-     <!-- Task Table - Only shown when a filter is selected -->
-{% if show_table %}
+
+<!-- Task Table -->
 <div class="table-container">
     <table class="table table-bordered table-hover">
         <thead class="table-light">
@@ -780,8 +781,8 @@ input[title]:hover:after {
     </table>
 </div>
 {% endif %}
-</div>
-
+        </div>
+      </div>
 <!-- Your custom script to show details -->
 <script>
     function showDetails(task) {
@@ -1049,6 +1050,50 @@ document.getElementById('toggleTaskForm').addEventListener('click', function() {
         formContainer.style.display = 'none';
         buttonText.textContent = 'Add New Task';
         this.querySelector('i').className = 'fas fa-plus';
+    }
+});
+</script>
+      <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Store the selected filter in session when a filter button is clicked
+    document.querySelectorAll('.status-filters a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            const filter = new URL(this.href).searchParams.get('status');
+            // Store in session storage
+            sessionStorage.setItem('lastFilter', filter);
+        });
+    });
+
+    // Highlight the active filter button
+    const currentFilter = new URL(window.location.href).searchParams.get('status');
+    if (currentFilter) {
+        const activeButton = document.querySelector(`.status-filters a[href*="status=${currentFilter}"]`);
+        if (activeButton) {
+            activeButton.classList.remove('btn-outline-primary', 'btn-outline-warning', 'btn-outline-info', 'btn-outline-success');
+            if (currentFilter === 'all') activeButton.classList.add('btn-primary');
+            else if (currentFilter === 'Pending') activeButton.classList.add('btn-warning');
+            else if (currentFilter === 'In Progress') activeButton.classList.add('btn-info');
+            else if (currentFilter === 'Completed') activeButton.classList.add('btn-success');
+        }
+    }
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.querySelector('input[name="search"]');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const filter = this.value.toLowerCase();
+            const rows = document.querySelectorAll("tbody tr");
+
+            rows.forEach(row => {
+                const titleCell = row.querySelector("td:nth-child(1)");
+                if (titleCell) {
+                    const titleText = titleCell.textContent.toLowerCase();
+                    row.style.display = titleText.includes(filter) ? "" : "none";
+                }
+            });
+        });
     }
 });
 </script>
