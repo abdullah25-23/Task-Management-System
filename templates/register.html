@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Register - TaskManager</title>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: white;
+      padding: 40px;
+      border-radius: 50px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .logo {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .logo img {
+      width: 60px;
+      height: 60px;
+    }
+
+    .logo h2 {
+      margin-top: 10px;
+      font-weight: 600;
+    }
+
+    input[type="text"], input[type="password"] {
+      width: 95%;
+      padding: 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .password-wrapper {
+      position: relative;
+    }
+
+    .password-wrapper i {
+  position: absolute;
+  right: 0px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #6c757d;    /* Grey color */
+  transition: color 0.2s;
+}
+
+.password-wrapper i:hover {
+  color: #495057;    /* Darker on hover */
+}
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      margin-top: 15px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .login-link {
+      margin-top: 15px;
+      text-align: center;
+    }
+
+    .login-link a {
+      color: #4CAF50;
+      text-decoration: none;
+    }
+    input[title]:hover:after {
+  content: attr(title);
+  padding: 5px 10px;
+  color: #333;
+  background: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  position: absolute;
+  left: 0;
+  top: 100%;
+  z-index: 100;
+  width: 200px;
+  margin-top: 5px;
+}
+
+.password-field {
+  padding-right: 35px;
+}
+
+    @media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">
+      <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo">
+      <h2>TaskManager</h2>
+    </div>
+
+    <form method="POST" action="{{ url_for('register') }}">
+       <input type="text" name="username" placeholder="Username" required
+       title="Create Unique username">
+
+     <div class="mb-3 password-wrapper">
+  <input type="password" class="form-control password-field"
+         id="password" name="password"
+         placeholder="Create password" required
+         title="Password must contain 8 characters">
+  <i class="fas fa-eye-slash toggle-password"
+     title="Toggle visibility"></i>
+</div>
+
+<div class="mb-3 password-wrapper">
+  <input type="password" class="form-control password-field"
+         id="confirm_password" name="confirm_password"
+         placeholder="Confirm password" required
+         title="Re-enter your password exactly">
+  <i class="fas fa-eye-slash toggle-password"
+     title="Toggle visibility"></i>
+</div>
+      <button type="submit" class="btn btn-primary">
+  <i class="fas fa-user-plus"></i> Register here
+</button>
+
+    </form>
+
+    <div class="login-link">
+      <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a></p>
+    </div>
+  </div>
+
+  <script>
+    const toggleConfirmPassword = document.querySelector("#toggleConfirmPassword");
+    const confirmPasswordField = document.querySelector("#confirm_password");
+
+    toggleConfirmPassword.addEventListener("click", function () {
+      const type = confirmPasswordField.getAttribute("type") === "password" ? "text" : "password";
+      confirmPasswordField.setAttribute("type", type);
+      this.classList.toggle("fa-eye-slash");
+    });
+  </script>
+<!-- Error Popup Container (hidden by default) -->
+<div id="errorPopup" class="popup-container" style="display:none;">
+  <div class="popup-content">
+    <span id="popupMessage"></span>
+    <button onclick="closePopup()">OK</button>
+  </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      const lastMessage = {{ messages[-1] | tojson | safe }};
+
+      const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer)
+          toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+      });
+
+      // For all messages (both success and error)
+      Toast.fire({
+        icon: lastMessage[0] === 'error' ? 'error' : 'success',
+        title: lastMessage[1],
+        background: lastMessage[0] === 'error' ? '#ffebee' : '#e8f5e9',
+        iconColor: lastMessage[0] === 'error' ? '#f44336' : '#4caf50'
+      });
+    {% endif %}
+  {% endwith %}
+});
+</script>
+<!--eyeicon -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Handle all password toggle icons
+  document.querySelectorAll('.toggle-password').forEach(function(icon) {
+    icon.addEventListener('click', function() {
+      const input = this.previousElementSibling;
+      const isPassword = input.type === 'password';
+
+      // Toggle input type
+      input.type = isPassword ? 'text' : 'password';
+
+      // Toggle icon class
+      this.classList.toggle('fa-eye-slash');
+      this.classList.toggle('fa-eye');
+
+      // Update title tooltip
+      this.title = isPassword ? 'Hide password' : 'Show password';
+    });
+  });
+});
+</script>
+</body>
+</html>
