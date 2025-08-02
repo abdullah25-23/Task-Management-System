@@ -8,9 +8,10 @@ from datetime import timedelta
 
 app = Flask(__name__)
 app.permanent_session_lifetime = timedelta(hours=1)  # Session expires after 1 hour
-app.secret_key = 'your_secret_key_here'  # <== 🔥 Place this here
+pp.secret_key = ''  # <== 🔥 Place this here
 # MongoDB Connection
-client = MongoClient("mongodb+srv://taskuser:taskpass123@taskcluster.zlltsdv.mongodb.net/?retryWrites=true&w=majority&appName=TaskCluster")
+# Enter your mango db Connection String
+client = MongoClient("mongodb+srv://user:password@taskcluster.zlltsdv.mongodb.net/?retryWrites=true&w=majority&appName=TaskCluster")
 
 db = client['task_manager']
 tasks_collection = db['tasks']
@@ -288,3 +289,4 @@ def logout():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
