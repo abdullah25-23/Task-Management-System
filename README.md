@@ -11,6 +11,8 @@ User registration and login.
 
 Secure session handling.
 
+Delete Account 
+
 🔹 Task Management
 
 Create, edit, update, and delete tasks.
@@ -94,6 +96,7 @@ python app.py
 App runs on: http://127.0.0.1:5000
 
 📡 API Documentation
+
 🔹 Tasks
 
 POST /tasks → Create a new task
