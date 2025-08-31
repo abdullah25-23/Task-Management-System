@@ -139,3 +139,8 @@ GET /analytics/trends → Weekly/monthly trends
 
 ### Task Details  
 ![Task Details](screenshots/taskdetails.png)  
+
+
+## 🎥 Demo Video  
+[Watch the walkthrough here](https://drive.google.com/file/d/1yPd3WvWzMDRf-S8UdSPP-O0sIu-ZOqbH/view?usp=drive_link)
+
