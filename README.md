@@ -142,5 +142,5 @@ GET /analytics/trends → Weekly/monthly trends
 
 
 ## 🎥 Demo Video  
-[Watch the walkthrough here](https://drive.google.com/file/d/1yPd3WvWzMDRf-S8UdSPP-O0sIu-ZOqbH/view?usp=drive_link)
+[Watch the Demo Video here](https://drive.google.com/file/d/1yPd3WvWzMDRf-S8UdSPP-O0sIu-ZOqbH/view?usp=drive_link)
 
