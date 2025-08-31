@@ -135,7 +135,7 @@ GET /analytics/trends → Weekly/monthly trends
 ![Notifications](screenshots/Notification.png)  
 
 ### Delete Account  
-![Delete Account](screenshots/DeleteAcc.png)  
+![Delete Account](screenshots/Delete Acc.png)  
 
 ### Task Details  
-![Task Details](screenshots/taskdetails.png)  
+![Task Details](screenshots/task details.png)  
