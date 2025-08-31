@@ -4,6 +4,7 @@ A modern Task Management System built with Flask (backend), MongoDB Atlas (datab
 It supports task management, real-time collaboration, notifications, and an analytics dashboard for productivity insights.
 
 🚀 Features
+
 🔹 User & Authentication
 
 User registration and login.
